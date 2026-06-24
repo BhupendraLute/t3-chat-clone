@@ -28,6 +28,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html
+			suppressHydrationWarning
 			lang="en"
 			className={cn(
 				"h-full",
@@ -38,7 +39,7 @@ export default function RootLayout({
 				publicSans.variable,
 			)}
 		>
-			<body className="min-h-full flex flex-col">
+			<body suppressHydrationWarning className="min-h-full flex flex-col">
 				<TooltipProvider>{children}</TooltipProvider>
 			</body>
 		</html>
