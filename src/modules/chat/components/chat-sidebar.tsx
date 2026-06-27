@@ -34,7 +34,7 @@ const ChatSidebar = ({user}: ChatSidebarProps) => {
     <div className="flex h-full w-64 flex-col border-r border-border bg-sidebar">
       {/* Header */}
       <div className="flex items-center border-b border-sidebar-border px-4 py-3">
-        <Image src="/logo.svg" alt="Logo" width={100} height={100} />
+        <Image src="/logo.svg" alt="Logo" width={100} height={100} style={{ width: "auto", height: "auto" }} />
       </div>
 
       <div className="p-4">
