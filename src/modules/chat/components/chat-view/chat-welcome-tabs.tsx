@@ -49,7 +49,12 @@ const CHAT_TAB_MESSAGE = [
 ];
 
 
-const ChatWelcomeTabs = ({userName="John Doe" , onMessageSelect} ) => {
+interface ChatWelcomeTabsProps {
+  userName?: string;
+  onMessageSelect?: (message: string) => void;
+}
+
+const ChatWelcomeTabs = ({userName="John Doe" , onMessageSelect}: ChatWelcomeTabsProps ) => {
     const [activeTab , setActiveTab] = useState(0)
   return (
    <div className="flex flex-col items-center justify-center px-4">
@@ -64,7 +69,7 @@ const ChatWelcomeTabs = ({userName="John Doe" , onMessageSelect} ) => {
               key={tab.tabName}
               variant={activeTab === index ? "default" : "secondary"}
               onClick={() => setActiveTab(index)}
-              className="w-[110px] justify-start"
+              className="w-27.5 justify-start"
             >
               {tab.icon}
               <span className="ml-2">{tab.tabName}</span>
@@ -72,11 +77,11 @@ const ChatWelcomeTabs = ({userName="John Doe" , onMessageSelect} ) => {
           ))}
         </div>
 
-        <div className="space-y-3 w-full min-h-[240px]">
+        <div className="space-y-3 w-full min-h-60">
           {CHAT_TAB_MESSAGE[activeTab].messages.map((message, index) => (
             <div key={index}>
               <button
-                onClick={() => onMessageSelect(message)}
+                onClick={() => onMessageSelect?.(message)}
                 className="w-full text-left text-sm text-muted-foreground hover:text-primary transition-colors duration-300 ease-in-out py-2"
               >
                 {message}

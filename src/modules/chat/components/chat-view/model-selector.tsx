@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Check, ChevronDown, Info, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,26 +20,55 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
+interface AIModel {
+  id: string;
+  name: string;
+  description: string;
+  pricing: {
+    prompt: string;
+    completion: string;
+    request: string;
+  };
+  context_length: number;
+  architecture: {
+    modality: string;
+    tokenizer: string;
+    input_modalities: string[];
+    output_modalities: string[];
+  };
+  top_provider: {
+    max_completion_tokens: number;
+    is_moderated: boolean;
+  };
+}
+
+interface ModelSelectorProps {
+  models?: AIModel[];
+  selectedModelId?: string;
+  onModelSelect?: (id: string) => void;
+  className?: string;
+}
+
 export function ModelSelector({
   models,
   selectedModelId,
   onModelSelect,
   className,
-}) {
+}: ModelSelectorProps) {
     const [open , setOpen] = useState(false);
     const [detailsOpen , setDetailsOpen] = useState(false);
-    const [selectedForDetails , setSelectedForDetails] = useState(null);
+    const [selectedForDetails , setSelectedForDetails] = useState<AIModel | null>(null);
     const [searchQuery , setSearchQuery] = useState("");
 
-      const selectedModel = models.find((m) => m.id === selectedModelId);
+      const selectedModel = models?.find((m: AIModel) => m.id === selectedModelId);
 
-  const formatContextLength = (length) => {
+  const formatContextLength = (length: number) => {
     if (length >= 1000000) return `${(length / 1000000).toFixed(1)}M`;
     if (length >= 1000) return `${(length / 1000).toFixed(0)}K`;
     return length.toString();
   };
 
-    const isFreeModel = (model) => {
+    const isFreeModel = (model: AIModel) => {
     return (
       model.pricing.prompt === "0" &&
       model.pricing.completion === "0" &&
@@ -48,13 +77,13 @@ export function ModelSelector({
   };
 
   
-  const openModelDetails = (model, e) => {
+  const openModelDetails = (model: AIModel, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedForDetails(model);
     setDetailsOpen(true);
   };
 
-      const filteredModels = models.filter((model) => {
+      const filteredModels = (models || []).filter((model: AIModel) => {
     const query = searchQuery.toLowerCase()
     return (
       model.name.toLowerCase().includes(query) ||
@@ -99,7 +128,7 @@ export function ModelSelector({
               />
             </div>
           </div>
-          <ScrollArea className="h-[400px]">
+          <ScrollArea className="h-100">
             <div className="p-2">
               <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
                 Available Models ({filteredModels.length})
@@ -117,7 +146,7 @@ export function ModelSelector({
                       selectedModelId === model.id && "bg-accent",
                     )}
                     onClick={() => {
-                      onModelSelect(model.id)
+                      onModelSelect?.(model.id)
                       setOpen(false)
                       setSearchQuery("")
                     }}
@@ -257,7 +286,7 @@ export function ModelSelector({
                         return (
                           <div key={key} className="space-y-1">
                             <p className="text-xs text-muted-foreground capitalize">{key.replace("_", " ")}</p>
-                            <p className="text-sm font-medium">${value}</p>
+                            <p className="text-sm font-medium">${value as string}</p>
                           </div>
                         )
                       })}

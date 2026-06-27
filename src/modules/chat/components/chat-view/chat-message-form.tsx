@@ -9,10 +9,15 @@ import { toast } from "sonner";
 import { useAIModels } from "../../hooks/use-ai-models";
 import { ModelSelector } from "./model-selector";
 
-export default function ChatMessageForm({ initialMessage, onMessageChange }) {
+interface ChatMessageFormProps {
+  initialMessage?: string;
+  onMessageChange?: (message: string) => void;
+}
+
+export default function ChatMessageForm({ initialMessage, onMessageChange }: ChatMessageFormProps) {
   const { data: models, isPending } = useAIModels();
   const [message, setMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState(models?.models[0].id);
+  const [selectedModel, setSelectedModel] = useState(models?.models?.[0]?.id);
 
   useEffect(() => {
     if (initialMessage) {
