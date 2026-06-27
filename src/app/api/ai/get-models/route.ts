@@ -27,7 +27,6 @@ export async function GET(request: NextRequest) {
     const response = await fetch("https://openrouter.ai/api/v1/models", {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
       },
     });
