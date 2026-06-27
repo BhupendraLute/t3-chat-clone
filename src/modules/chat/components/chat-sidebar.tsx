@@ -17,14 +17,24 @@ import { usePathname } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 import UserButton from "../../authentication/components/user-button";
 
-const ChatSidebar = ({user}) => {
+interface SidebarUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
+interface ChatSidebarProps {
+  user?: SidebarUser | null;
+}
+
+const ChatSidebar = ({user}: ChatSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <div className="flex h-full w-64 flex-col border-r border-border bg-sidebar">
       {/* Header */}
       <div className="flex items-center border-b border-sidebar-border px-4 py-3">
-        <Image src="/logo.svg" alt="Logo" width={100} height={100} />
+        <Image src="/logo.svg" alt="Logo" width={100} height={100} style={{ width: "auto", height: "auto" }} />
       </div>
 
       <div className="p-4">
@@ -62,7 +72,7 @@ const ChatSidebar = ({user}) => {
       <div className="p-4 flex items-center gap-3 border-t border-sidebar-border">
         <UserButton user={user} />
         <span className="flex-1 text-sm text-sidebar-foreground truncate">
-          {user.email}
+          {user?.email}
         </span>
       </div>
 

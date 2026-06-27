@@ -19,6 +19,27 @@ import { useRouter } from "next/navigation";
 
 
 
+interface UserButtonUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  createdAt?: string | Date | null;
+}
+
+interface UserButtonProps {
+  user?: UserButtonUser | null;
+  onLogout?: () => void;
+  onSettings?: () => void;
+  onProfile?: () => void;
+  onBilling?: () => void;
+  showBadge?: boolean;
+  badgeText?: string;
+  badgeVariant?: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link";
+  size?: "sm" | "md" | "lg";
+  showEmail?: boolean;
+  showMemberSince?: boolean;
+}
+
 export default function UserButton({
   user,
   onLogout,
@@ -31,7 +52,7 @@ export default function UserButton({
   size = "md",
   showEmail = true,
   showMemberSince = true,
-}) {
+}: UserButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -59,11 +80,11 @@ export default function UserButton({
   };
 
   // Get user initials for avatar fallback
-  const getUserInitials = (name, email) => {
+  const getUserInitials = (name: string | null | undefined, email: string | null | undefined) => {
     if (name) {
       return name
         .split(" ")
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .join("")
         .toUpperCase()
         .slice(0, 2);
@@ -74,8 +95,7 @@ export default function UserButton({
     return "U";
   };
 
-  // Format member since date
-const formatMemberSince = (date) => {
+const formatMemberSince = (date: string | Date | null | undefined) => {
   if (!date) return "N/A";
 
   const d = new Date(date);
@@ -88,8 +108,7 @@ const formatMemberSince = (date) => {
   }).format(d);
 };
 
-  // Avatar sizes
-  const avatarSizes = {
+  const avatarSizes: Record<string, string> = {
     sm: "h-8 w-8",
     md: "h-10 w-10",
     lg: "h-12 w-12",
