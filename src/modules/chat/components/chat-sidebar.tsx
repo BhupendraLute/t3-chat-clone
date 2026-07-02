@@ -15,6 +15,7 @@ import {
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "next/navigation";
+import DeleteChatModel from "@/components/delete-chat-model";
 import { useGetChats, useDeleteChat } from "../hooks/use-chats";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -65,14 +66,7 @@ function groupChatsByDate(chats?: SidebarChat[] | null): ChatGroups {
          const date =
             typeof chatDate === "string" ? new Date(chatDate) : chatDate;
 
-         console.log(
-            "Processing chat:",
-            chat.id,
-            "Date:",
-            date,
-            "createdAt:",
-            chatDate,
-         );
+         
 
          if (isToday(date)) {
             groups.today.push(chat);
@@ -165,7 +159,7 @@ const ChatSidebar = ({ user, chats: initialChats }: ChatSidebarProps) => {
       return sourceChats as SidebarChat[];
    }, [initialChats, fetchedChats]);
 
-   console.log("Fetched chats:", fetchedChats);
+   
    const pathname = usePathname();
    const activeChatId = pathname?.startsWith("/chat/")
       ? pathname.split("/")[2]
@@ -173,6 +167,8 @@ const ChatSidebar = ({ user, chats: initialChats }: ChatSidebarProps) => {
    const router = useRouter();
    const [searchQuery, setSearchQuery] = useState("");
    const deleteMutation = useDeleteChat();
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
    const filteredChats = useMemo<SidebarChat[]>(() => {
       if (!searchQuery) return normalizedChats;
@@ -189,21 +185,15 @@ const ChatSidebar = ({ user, chats: initialChats }: ChatSidebarProps) => {
 
    const groupedChats = useMemo(() => {
       const result = groupChatsByDate(filteredChats);
-      console.log("Filtered chats:", filteredChats);
-      console.log("Grouped chats:", result);
+      
       return result;
    }, [filteredChats]);
 
    const handleDelete = (e: React.MouseEvent, chatId: string) => {
       e.preventDefault();
       e.stopPropagation();
-      deleteMutation.mutate(chatId, {
-         onSuccess: () => {
-            if (activeChatId === chatId) {
-               router.push("/");
-            }
-         },
-      });
+      setSelectedChatId(chatId);
+      setIsModalOpen(true);
    };
 
    return (
@@ -271,6 +261,15 @@ const ChatSidebar = ({ user, chats: initialChats }: ChatSidebarProps) => {
                {user.email}
             </span>
          </div>
+        <DeleteChatModel
+           isModalOpen={isModalOpen}
+           setIsModalOpen={setIsModalOpen}
+           chatId={selectedChatId}
+           onDeleted={(id) => {
+              if (activeChatId === id) router.push("/");
+           }}
+        />
+
       </div>
    );
 };

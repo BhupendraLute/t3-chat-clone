@@ -6,6 +6,7 @@ import {
 } from "ai";
 import { CHAT_SYSTEM_PROMPT } from "@/lib/prompt";
 import { prisma } from "@/lib/db";
+import type { Message } from "@/generated/prisma/client";
 
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { NextRequest } from "next/server";
@@ -18,9 +19,9 @@ const openRouter = createOpenRouter({
 /**
  * Convert DB message to UI format for AI SDK
  */
-function dbMessageToUI(msg) {
+function dbMessageToUI(msg: Message) {
    try {
-      const parts = JSON.parse(msg.content);
+      const parts: Array<{ type: string; text?: string; [key: string]: any }> = JSON.parse(msg.content);
       const textParts = parts.filter((p) => p.type === "text");
 
       if (textParts.length === 0) return null;

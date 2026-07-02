@@ -51,21 +51,21 @@ type MessagePartShape = {
    [key: string]: unknown;
 };
 
-function parseMessageToUI(msg) {
+function parseMessageToUI(msg: DBMessage) {
    const basePart = { type: "text", text: msg.content };
 
    try {
       const parts = JSON.parse(msg.content);
       return {
          id: msg.id,
-         role: msg.messageRole.toLowerCase(),
+         role: msg.messageRole.toLowerCase() as UIMessage["role"],
          parts: Array.isArray(parts) ? parts : [basePart],
          createdAt: msg.createdAt,
       };
    } catch {
       return {
          id: msg.id,
-         role: msg.messageRole.toLowerCase(),
+         role: msg.messageRole.toLowerCase() as UIMessage["role"],
          parts: [basePart],
          createdAt: msg.createdAt,
       };
@@ -126,7 +126,7 @@ function MessagePart({
 export const MessageViewWithForm = ({ chatId }: { chatId: string }) => {
    const { data: chatData, isPending } = useGetChatById(chatId);
 
-   console.log(chatData);
+   
 
    if (isPending) {
       return (
@@ -190,7 +190,7 @@ const ChatView = ({
       messages: initialMessages,
       transport,
       onError: (err) => {
-         console.log("Chat error", err);
+         console.error("Chat error", err);
          toast.error(err.message);
       },
    });
@@ -322,7 +322,7 @@ const ChatView = ({
                         ) : (
                            <ModelSelector
                               models={modelsData?.models ?? []}
-                              selectedModelId={selectedModel}
+                              selectedModelId={selectedModel ?? undefined}
                               onModelSelect={setSelectedModel}
                               className=""
                            />
