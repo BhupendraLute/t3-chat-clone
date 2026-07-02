@@ -21,9 +21,15 @@ export default function ChatMessageForm({
 }: ChatMessageFormProps) {
    const { data: models, isPending } = useAIModels();
    const [message, setMessage] = useState("");
-   const [selectedModel, setSelectedModel] = useState(models?.models?.[0]?.id);
+   const [selectedModel, setSelectedModel] = useState(models?.models?.[0]?.id ?? null);
 
    const { mutateAsync, isPending: isChatPending } = useCreateChat();
+
+   useEffect(() => {
+      if (!selectedModel) {
+         setSelectedModel(models?.models?.[0]?.id ?? null);
+      }
+   }, [models, selectedModel]);
 
    useEffect(() => {
       if (initialMessage) {
@@ -87,15 +93,17 @@ export default function ChatMessageForm({
                   {/* Submit Button */}
                   <Button
                      type="submit"
-                     disabled={!message.trim()}
+                     disabled={!message.trim() || !selectedModel || isChatPending}
                      size="sm"
-                     variant={message.trim() ? "default" : "ghost"}
+                     variant={message.trim() && selectedModel ? "default" : "ghost"}
                      className="h-8 w-8 p-0 rounded-full "
                      aria-label="Send message"
                      title={
-                        message.trim()
-                           ? "Send message"
-                           : "Enter a message to enable"
+                        !message.trim()
+                           ? "Enter a message to enable"
+                           : !selectedModel
+                           ? "Select a model to enable"
+                           : "Send message"
                      }
                   >
                      {isChatPending ? (

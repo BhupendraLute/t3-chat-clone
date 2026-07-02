@@ -177,6 +177,14 @@ const ChatView = ({
    );
    const { data: modelsData, isPending: isModelLoading } = useAIModels();
 
+   useEffect(() => {
+      if (selectedModel) return;
+      const firstModelId = modelsData?.models?.[0]?.id;
+      if (firstModelId) {
+         setSelectedModel(firstModelId);
+      }
+   }, [modelsData, selectedModel]);
+
    const transport = useMemo(
       () =>
          new DefaultChatTransport({
@@ -328,7 +336,11 @@ const ChatView = ({
                            />
                         )}
                      </div>
-                     <PromptInputSubmit status={status} onStop={stop} />
+                     <PromptInputSubmit
+                        status={status}
+                        onStop={stop}
+                        disabled={!selectedModel || isBuzy}
+                     />
                   </PromptInputTools>
                </PromptInputFooter>
             </PromptInput>
