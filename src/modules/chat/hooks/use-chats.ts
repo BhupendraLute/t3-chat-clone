@@ -44,14 +44,18 @@ export const useCreateChat = () => {
    });
 };
 
-export const useDeleteChat = (chatId: string) => {
+export const useDeleteChat = () => {
    const queryClient = useQueryClient();
    const router = useRouter();
 
    return useMutation({
-      mutationFn: () => deleteChat(chatId),
-      onSuccess: () => {
-         queryClient.invalidateQueries({ queryKey: ["chats", chatId] });
+      mutationFn: (chatId: string) => deleteChat(chatId),
+      onSuccess: (_data, variables) => {
+         // Invalidate both the single-chat and the chats list so UI refreshes
+         if (variables) {
+            queryClient.invalidateQueries({ queryKey: ["chats", variables as string] });
+         }
+         queryClient.invalidateQueries({ queryKey: ["chats"] });
       },
       onError: () => {
          toast.error("Failed to delete chat");

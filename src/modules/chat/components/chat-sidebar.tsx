@@ -14,8 +14,8 @@ import {
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname } from "next/navigation";
-import { useGetChats } from "../hooks/use-chats";
+import { usePathname, useRouter } from "next/navigation";
+import { useGetChats, useDeleteChat } from "../hooks/use-chats";
 import { Spinner } from "@/components/ui/spinner";
 
 type ChatGroupKey = "today" | "yesterday" | "lastWeek" | "older";
@@ -170,9 +170,9 @@ const ChatSidebar = ({ user, chats: initialChats }: ChatSidebarProps) => {
    const activeChatId = pathname?.startsWith("/chat/")
       ? pathname.split("/")[2]
       : null;
-   const [isModalOpen, setIsModalOpen] = useState(false);
+   const router = useRouter();
    const [searchQuery, setSearchQuery] = useState("");
-   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+   const deleteMutation = useDeleteChat();
 
    const filteredChats = useMemo<SidebarChat[]>(() => {
       if (!searchQuery) return normalizedChats;
@@ -197,8 +197,13 @@ const ChatSidebar = ({ user, chats: initialChats }: ChatSidebarProps) => {
    const handleDelete = (e: React.MouseEvent, chatId: string) => {
       e.preventDefault();
       e.stopPropagation();
-      setSelectedChatId(chatId);
-      setIsModalOpen(true);
+      deleteMutation.mutate(chatId, {
+         onSuccess: () => {
+            if (activeChatId === chatId) {
+               router.push("/");
+            }
+         },
+      });
    };
 
    return (
